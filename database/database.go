@@ -1,4 +1,4 @@
-package db
+package database
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 )
 
 var client *mongo.Client
-var db *mongo.Database
+var Db *mongo.Database
 
 func ConnectToDatabase(connectionString string) {
 	// Set client options
@@ -28,8 +28,6 @@ func ConnectToDatabase(connectionString string) {
 		log.Fatal(err)
 	}
 
-	db = client.Database("contacts")
+	Db = client.Database("contacts")
 	println("Connected to MongoDB!")
 }
-
-// Define your data model here (e.g., Contact struct)
