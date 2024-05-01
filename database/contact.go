@@ -27,8 +27,6 @@ func AddContact(contact Contact) error {
 }
 
 func GetContacts() ([]Contact, error) {
-	// Perform a query to retrieve all contacts from the database
-	// Example:
 	collection := Db.Collection("contacts")
 	cursor, err := collection.Find(context.Background(), bson.M{})
 	if err != nil {
@@ -48,7 +46,4 @@ func GetContacts() ([]Contact, error) {
 		return nil, err
 	}
 	return contacts, nil
-
-	// Placeholder return statement
-	return nil, nil
 }
