@@ -12,7 +12,6 @@ var client *mongo.Client
 var Db *mongo.Database
 
 func ConnectToDatabase(connectionString string) {
-	// Set client options
 	clientOptions := options.Client().ApplyURI(connectionString)
 
 	// Connect to MongoDB

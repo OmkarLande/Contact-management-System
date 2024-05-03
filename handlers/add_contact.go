@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func generateRandomAvatar(name string) (string, error) {
@@ -23,6 +25,14 @@ func AddContactHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get the user ID from the request context
+	userID, ok := r.Context().Value("userID").(primitive.ObjectID)
+	if !ok {
+		log.Println("Failed to get user ID from request context")
+		http.Error(w, "Failed to get user ID from request context", http.StatusInternalServerError)
+		return
+	}
+
 	avatarURL, err := generateRandomAvatar(contact.Name)
 	if err != nil {
 		log.Println("Failed to generate avatar:", err)
@@ -32,7 +42,7 @@ func AddContactHandler(w http.ResponseWriter, r *http.Request) {
 
 	contact.ProfileImage = avatarURL
 
-	err = database.AddContact(contact)
+	err = database.AddContact(contact, userID)
 	if err != nil {
 		log.Println("Failed to add contact to database:", err)
 		http.Error(w, "Failed to add contact to database", http.StatusInternalServerError)
