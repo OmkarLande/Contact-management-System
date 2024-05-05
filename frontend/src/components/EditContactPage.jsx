@@ -16,28 +16,27 @@ const EditContactPage = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setContact(prevContact => ({
-      ...prevContact,
+    setContact({
+      ...contact,
       [name]: value
-    }));
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // console.log(id)
-      const response = await fetch(BASE_URL + `/edit-contact/${contactid}/${userid}`, {
+      const response = await fetch(`${BASE_URL}/edit-contact/${contactid}/${userid}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(contact, userid)
+        body: JSON.stringify(contact)
       });
       if (!response.ok) {
         throw new Error('Failed to edit contact');
       }
       toast.success('Contact updated successfully');
-      navigate('/dashboard')
+      navigate('/dashboard');
     } catch (error) {
       console.error('Edit contact error:', error.message);
       toast.error('Failed to edit contact');
@@ -61,7 +60,7 @@ const EditContactPage = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          // className="space-y-4 flex flex-col items-center justify-center"
+          className="space-y-4 flex flex-col itemcenter justify-center"
         >
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -77,6 +76,7 @@ const EditContactPage = () => {
               whileTap={{ scale: 0.95 }}
               type="text"
               id="name"
+              name="name"
               value={contact.name}
               onChange={handleInputChange}
               className="w-full px-4 py-2 mt-1 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
@@ -96,6 +96,7 @@ const EditContactPage = () => {
               whileTap={{ scale: 0.95 }}
               type="email"
               id="email"
+              name="email"
               value={contact.email}
               onChange={handleInputChange}
               className="w-full px-4 py-2 mt-1 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
@@ -115,12 +116,12 @@ const EditContactPage = () => {
               whileTap={{ scale: 0.95 }}
               type="text"
               id="phoneNumber"
+              name="phoneNumber"
               value={contact.phoneNumber}
               onChange={handleInputChange}
               className="w-full px-4 py-2 mt-1 rounded-md border border-gray-300 focus:outline-none focus:border-blue-500"
             />
           </motion.div>
-          
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -131,7 +132,6 @@ const EditContactPage = () => {
           </motion.button>
         </motion.form>
       </div>
-
     </div>
   );
 };
