@@ -5,13 +5,17 @@ import (
 	"contact-management-system/database"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	connectionString := "mongodb+srv://admin:AGXdEDgYfmZcmLJt@cluster0.h1aicec.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+	godotenv.Load(".env")
+	var mongodbURI = os.Getenv("MONGODB_URI")
+	connectionString := mongodbURI
 	database.ConnectToDatabase(connectionString)
 
 	router := mux.NewRouter()
