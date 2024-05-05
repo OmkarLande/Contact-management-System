@@ -1,4 +1,4 @@
-package handlers
+package controller
 
 import (
 	"encoding/json"
@@ -14,6 +14,9 @@ import (
 var store = sessions.NewCookieStore([]byte("contact-management-system"))
 
 func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
 	var credentials struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
@@ -61,11 +64,11 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"message": "Login successful"})
+	json.NewEncoder(w).Encode(map[string]interface{}{"message": "Login successful", "user": user})
 }
 
 func LogoutUserHandler(w http.ResponseWriter, r *http.Request) {
-	session, err := store.Get(r, "contact-management-system-session")
+	session, err := store.Get(r, "session")
 	if err != nil {
 		log.Println("Failed to get session:", err)
 		http.Error(w, "Failed to get session", http.StatusInternalServerError)

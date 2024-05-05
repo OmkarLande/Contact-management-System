@@ -1,8 +1,7 @@
-package handlers
+package controller
 
 import (
 	"contact-management-system/database"
-	"contact-management-system/middleware"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -12,8 +11,6 @@ import (
 )
 
 func DeleteContactHandler(w http.ResponseWriter, r *http.Request) {
-	userID := middleware.GetUserIDFromContextOrSession(r)
-
 	params := mux.Vars(r)
 	contactID, ok := params["contact_id"]
 	if !ok {
@@ -29,13 +26,22 @@ func DeleteContactHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = database.DeleteContact(objectID, userID)
+	err = database.DeleteContact(objectID)
 	if err != nil {
 		log.Println("Failed to delete contact:", err)
 		http.Error(w, "Failed to delete contact", http.StatusInternalServerError)
 		return
 	}
 
+	responseData := map[string]string{"message": "Contact deleted successfully"}
+	responseJSON, err := json.Marshal(responseData)
+	if err != nil {
+		log.Println("Failed to encode response:", err)
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"message": "Contact deleted successfully"})
+	w.Write(responseJSON)
 }

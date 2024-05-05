@@ -1,16 +1,24 @@
-import Login from '../components/auth/login'
-import Register from '../components/auth/register'
-import './App.css'
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import LoginPage from './components/LoginPage';
+import RegisterPage from './components/RegisterPage';
+import Dashboard from './components/Dashboard';
+import AddContactPage from './components/AddContactPage';
+import EditContactPage from './components/EditContactPage';
 
-function App() {
-
+const App = () => {
   return (
     <>
-      <h1 className="text-3xl text-center font-bold">Contact Management System</h1>
-      <Login />
-      {/* <Register /> */}
+      
+      <Routes>
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/add-contact" element={<AddContactPage />} />
+        <Route path="/edit-contact/:contactid/:userid" element={<EditContactPage />} />
+      </Routes>
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;

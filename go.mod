@@ -2,9 +2,15 @@ module contact-management-system
 
 go 1.22.2
 
-require go.mongodb.org/mongo-driver v1.15.0
+require (
+	github.com/gorilla/handlers v1.5.2
+	go.mongodb.org/mongo-driver v1.15.0
+)
 
-require github.com/gorilla/securecookie v1.1.2 // indirect
+require (
+	github.com/felixge/httpsnoop v1.0.3 // indirect
+	github.com/gorilla/securecookie v1.1.2 // indirect
+)
 
 require (
 	github.com/golang/snappy v0.0.1 // indirect

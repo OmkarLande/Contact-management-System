@@ -17,17 +17,16 @@ type Contact struct {
 	ProfileImage string             `json:"profile_image"`
 }
 
-func AddContact(contact Contact, userID primitive.ObjectID) error {
+func AddContact(contact Contact, userID primitive.ObjectID) (Contact, error) {
 	contact.UserID = userID
 	collection := Db.Collection("contacts")
 	_, err := collection.InsertOne(context.Background(), contact)
 	if err != nil {
 		log.Println("Failed to insert contact:", err)
-		return err
+		return Contact{}, err
 	}
 
-	log.Println("Contact added successfully:")
-	return nil
+	return contact, nil
 }
 
 func GetContact(contactID, userID primitive.ObjectID) (Contact, error) {
@@ -64,9 +63,9 @@ func GetContacts(userID primitive.ObjectID) ([]Contact, error) {
 	return contacts, nil
 }
 
-func DeleteContact(contactID, userID primitive.ObjectID) error {
+func DeleteContact(contactID primitive.ObjectID) error {
 	collection := Db.Collection("contacts")
-	filter := bson.D{{Key: "_id", Value: contactID}, {Key: "user_id", Value: userID}}
+	filter := bson.D{{Key: "_id", Value: contactID}}
 	_, err := collection.DeleteOne(context.Background(), filter)
 	return err
 }

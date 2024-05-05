@@ -1,4 +1,4 @@
-package handlers
+package controller
 
 import (
 	"context"
@@ -22,6 +22,12 @@ func EditContactHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if updatedContact.Name == "" && updatedContact.PhoneNumber == "" && updatedContact.Email == "" {
+		log.Println("No fields to update")
+		http.Error(w, "No fields to update", http.StatusBadRequest)
+		return
+	}
+
 	params := mux.Vars(r)
 	contactID, ok := params["contact_id"]
 	if !ok {
@@ -37,39 +43,34 @@ func EditContactHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID, ok := r.Context().Value("userID").(primitive.ObjectID)
+	userID, ok := params["user_id"]
 	if !ok {
-		log.Println("Failed to get user ID from request context")
-		http.Error(w, "Failed to get user ID from request context", http.StatusInternalServerError)
+		log.Println("User ID not found in request")
+		http.Error(w, "User ID not found in request", http.StatusBadRequest)
 		return
 	}
 
-	existingContact, err := database.GetContact(objectID, userID)
+	// Convert userID to primitive.ObjectID
+	userObjectID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
-		log.Println("Failed to fetch existing contact:", err)
-		http.Error(w, "Failed to fetch existing contact", http.StatusInternalServerError)
+		log.Println("Invalid user ID:", err)
+		http.Error(w, "Invalid user ID", http.StatusBadRequest)
 		return
 	}
 
-	if existingContact.UserID != userID {
-		log.Println("Contact does not belong to the logged-in user")
-		http.Error(w, "Contact does not belong to the logged-in user", http.StatusForbidden)
+	updatedContact.UserID = userObjectID
+
+	avatarURL, err := GenerateRandomAvatar(updatedContact.Name)
+	if err != nil {
+		log.Println("Failed to generate avatar:", err)
+		http.Error(w, "Failed to generate avatar", http.StatusInternalServerError)
 		return
 	}
-
-	if updatedContact.Name != "" {
-		existingContact.Name = updatedContact.Name
-	}
-	if updatedContact.PhoneNumber != "" {
-		existingContact.PhoneNumber = updatedContact.PhoneNumber
-	}
-	if updatedContact.Email != "" {
-		existingContact.Email = updatedContact.Email
-	}
+	updatedContact.ProfileImage = avatarURL
 
 	collection := database.Db.Collection("contacts")
 	filter := bson.D{{Key: "_id", Value: objectID}}
-	update := bson.D{{Key: "$set", Value: existingContact}}
+	update := bson.D{{Key: "$set", Value: updatedContact}}
 	_, err = collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		log.Println("Failed to update contact:", err)
